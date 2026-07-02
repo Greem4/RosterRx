@@ -160,6 +160,7 @@ export default function MedicinesPage() {
   const [loading, setLoading] = useState(true)
   const [sortKey, setSortKey] = useState('expiry_date')
   const [sortDir, setSortDir] = useState('asc')
+  const [seriesQuery, setSeriesQuery] = useState('')
   const [modal, setModal] = useState(null)
 
   const closeModal = () => setModal(null)
@@ -199,9 +200,15 @@ export default function MedicinesPage() {
     }
   }, [isAdmin, searchParams, setSearchParams])
 
+  const filteredItems = useMemo(() => {
+    const q = seriesQuery.trim().toLocaleLowerCase('ru')
+    if (!q) return items
+    return items.filter((m) => m.series.toLocaleLowerCase('ru').includes(q))
+  }, [items, seriesQuery])
+
   const sortedItems = useMemo(
-    () => [...items].sort((a, b) => compareItems(a, b, sortKey, sortDir)),
-    [items, sortKey, sortDir],
+    () => [...filteredItems].sort((a, b) => compareItems(a, b, sortKey, sortDir)),
+    [filteredItems, sortKey, sortDir],
   )
 
   const handleDelete = async (id) => {
@@ -219,7 +226,7 @@ export default function MedicinesPage() {
   return (
     <div className="medicines-page">
       {showToolbar && (
-      <header className="roster-page-toolbar">
+      <header className="roster-page-toolbar medicines-page__toolbar">
         {!loading && items.length > 0 && (
           <>
             <label className="sort-field">
@@ -247,6 +254,18 @@ export default function MedicinesPage() {
             >
               {sortDir === 'asc' ? '↑' : '↓'}
             </button>
+            <label className="medicines-page__search-field">
+              <span className="visually-hidden">Поиск по серии</span>
+              <input
+                type="search"
+                className="medicines-page__search"
+                placeholder="Серия…"
+                value={seriesQuery}
+                onChange={(e) => setSeriesQuery(e.target.value)}
+                autoComplete="off"
+                enterKeyHint="search"
+              />
+            </label>
           </>
         )}
         {isAdmin && (
@@ -266,20 +285,22 @@ export default function MedicinesPage() {
         </div>
       )}
 
-      {!loading && items.length > 0 && (
-        <>
-          <ul className="medicines-list" aria-label="Список лекарств">
-            {sortedItems.map((m) => (
-              <MedicineItem
-                key={m.id}
-                medicine={m}
-                isAdmin={isAdmin}
-                onEdit={openEdit}
-                onDelete={handleDelete}
-              />
-            ))}
-          </ul>
-        </>
+      {!loading && items.length > 0 && sortedItems.length === 0 && (
+        <p className="medicines-empty-filter muted">По этой серии ничего не найдено.</p>
+      )}
+
+      {!loading && sortedItems.length > 0 && (
+        <ul className="medicines-list" aria-label="Список лекарств">
+          {sortedItems.map((m) => (
+            <MedicineItem
+              key={m.id}
+              medicine={m}
+              isAdmin={isAdmin}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+            />
+          ))}
+        </ul>
       )}
 
       {modal && (

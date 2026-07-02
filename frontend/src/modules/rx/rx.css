@@ -1,8 +1,106 @@
 /* RosterRX: список лекарств, сортировка, карточки, форма. */
 
-.roster-page-toolbar .sort-field {
-  flex: 1;
+.medicines-page__toolbar {
+  --rx-toolbar-control-h: 2.375rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.medicines-page__toolbar .sort-field {
+  flex: 0 0 auto;
+  width: 6.25rem;
   min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.medicines-page__toolbar .medicines-page__search-field {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.medicines-page__toolbar .sort-select,
+.medicines-page__toolbar .medicines-page__search,
+.medicines-page__toolbar .sort-dir-btn,
+.medicines-page__toolbar .btn-primary {
+  height: var(--rx-toolbar-control-h);
+  min-height: var(--rx-toolbar-control-h);
+  max-height: var(--rx-toolbar-control-h);
+  box-sizing: border-box;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+}
+
+.medicines-page__toolbar .sort-select {
+  width: 100%;
+  padding: 0 1.35rem 0 0.5rem;
+  font: inherit;
+  color: var(--color-text);
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2371717a' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.45rem center;
+}
+
+.medicines-page__toolbar .medicines-page__search {
+  width: 100%;
+  padding: 0 0.65rem;
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+}
+
+.medicines-page__toolbar .medicines-page__search::placeholder {
+  color: var(--color-text-muted);
+}
+
+.medicines-page__toolbar .sort-select:focus,
+.medicines-page__toolbar .medicines-page__search:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.medicines-page__toolbar .sort-dir-btn {
+  flex-shrink: 0;
+  width: var(--rx-toolbar-control-h);
+  min-width: var(--rx-toolbar-control-h);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.medicines-page__toolbar .sort-dir-btn:hover {
+  color: var(--color-text);
+  background: var(--color-surface-elevated);
+}
+
+.medicines-page__toolbar .btn-primary {
+  flex-shrink: 0;
+  padding: 0 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border: none;
+}
+
+.medicines-empty-filter {
+  margin: 2rem 0;
+  text-align: center;
 }
 
 .medicines-loading {
@@ -289,6 +387,17 @@
 }
 
 @media (max-width: 640px) {
+  .medicines-page__toolbar {
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .medicines-page__toolbar .sort-field {
+    flex: 0 0 5.5rem;
+    width: 5.5rem;
+  }
+
   /* Список лекарств — уже поля, учёт safe-area у вырезов */
   .app-main:has(.medicines-page) {
     padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
