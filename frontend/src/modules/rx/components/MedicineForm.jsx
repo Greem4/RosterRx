@@ -1,29 +1,29 @@
 import { useEffect, useState } from 'react'
 import { rxApi } from '../api'
 
-/** ISO (YYYY-MM-DD) → ДД.ММ.ГГГГ для отображения в поле. */
+/** ISO (YYYY-MM-DD) → ДД.ММ.ГГ для отображения в поле. */
 function isoToDisplay(iso) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '')
   if (!match) return ''
   const [, y, m, d] = match
-  return `${d}.${m}.${y}`
+  return `${d}.${m}.${y.slice(2)}`
 }
 
-/** ДД.ММ.ГГГГ → ISO (YYYY-MM-DD), либо '' если дата неполная/некорректная. */
+/** ДД.ММ.ГГ → ISO (YYYY-MM-DD), либо '' если дата неполная/некорректная. */
 function displayToIso(display) {
-  const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(display)
+  const match = /^(\d{2})\.(\d{2})\.(\d{2})$/.exec(display)
   if (!match) return ''
   const [, d, m, y] = match
   if (Number(m) < 1 || Number(m) > 12 || Number(d) < 1 || Number(d) > 31) return ''
-  return `${y}-${m}-${d}`
+  return `20${y}-${m}-${d}`
 }
 
 /** Маска ввода даты: только цифры, точки расставляются по ходу набора. */
 function maskDateInput(raw) {
-  const digits = raw.replace(/\D/g, '').slice(0, 8)
+  const digits = raw.replace(/\D/g, '').slice(0, 6)
   let out = digits.slice(0, 2)
   if (digits.length > 2) out += '.' + digits.slice(2, 4)
-  if (digits.length > 4) out += '.' + digits.slice(4, 8)
+  if (digits.length > 4) out += '.' + digits.slice(4, 6)
   return out
 }
 
@@ -54,7 +54,7 @@ export default function MedicineForm({ medicineId, onSuccess, onCancel }) {
     e.preventDefault()
     const expiryDate = displayToIso(expiryDisplay)
     if (!expiryDate) {
-      setError('Введите дату в формате ДД.ММ.ГГГГ')
+      setError('Введите дату в формате ДД.ММ.ГГ')
       return
     }
     setError('')
@@ -94,10 +94,10 @@ export default function MedicineForm({ medicineId, onSuccess, onCancel }) {
         <input
           type="text"
           inputMode="numeric"
-          placeholder="ДД.ММ.ГГГГ"
+          placeholder="ДД.ММ.ГГ"
           value={expiryDisplay}
           onChange={(e) => setExpiryDisplay(maskDateInput(e.target.value))}
-          maxLength={10}
+          maxLength={8}
           required
         />
       </label>
