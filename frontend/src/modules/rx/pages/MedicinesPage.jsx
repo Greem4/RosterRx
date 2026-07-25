@@ -160,7 +160,7 @@ export default function MedicinesPage() {
   const [loading, setLoading] = useState(true)
   const [sortKey, setSortKey] = useState('expiry_date')
   const [sortDir, setSortDir] = useState('asc')
-  const [seriesQuery, setSeriesQuery] = useState('')
+  const [query, setQuery] = useState('')
   const [modal, setModal] = useState(null)
 
   const closeModal = () => setModal(null)
@@ -201,10 +201,15 @@ export default function MedicinesPage() {
   }, [isAdmin, searchParams, setSearchParams])
 
   const filteredItems = useMemo(() => {
-    const q = seriesQuery.trim().toLocaleLowerCase('ru')
+    const q = query.trim().toLocaleLowerCase('ru')
     if (!q) return items
-    return items.filter((m) => m.series.toLocaleLowerCase('ru').includes(q))
-  }, [items, seriesQuery])
+    return items.filter((m) => {
+      const haystack = [m.name, m.series, formatDate(m.expiry_date), m.expiry_date]
+        .join(' ')
+        .toLocaleLowerCase('ru')
+      return haystack.includes(q)
+    })
+  }, [items, query])
 
   const sortedItems = useMemo(
     () => [...filteredItems].sort((a, b) => compareItems(a, b, sortKey, sortDir)),
@@ -255,13 +260,13 @@ export default function MedicinesPage() {
               {sortDir === 'asc' ? '↑' : '↓'}
             </button>
             <label className="medicines-page__search-field">
-              <span className="visually-hidden">Поиск по серии</span>
+              <span className="visually-hidden">Поиск</span>
               <input
                 type="search"
                 className="medicines-page__search"
-                placeholder="Серия…"
-                value={seriesQuery}
-                onChange={(e) => setSeriesQuery(e.target.value)}
+                placeholder="Поиск…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 autoComplete="off"
                 enterKeyHint="search"
               />
@@ -286,7 +291,7 @@ export default function MedicinesPage() {
       )}
 
       {!loading && items.length > 0 && sortedItems.length === 0 && (
-        <p className="medicines-empty-filter muted">По этой серии ничего не найдено.</p>
+        <p className="medicines-empty-filter muted">Ничего не найдено.</p>
       )}
 
       {!loading && sortedItems.length > 0 && (
